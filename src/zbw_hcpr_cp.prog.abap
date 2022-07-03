@@ -16,7 +16,8 @@ DATA(lobj_hcpr_cp) = NEW zcl_bw_hcpr_cp(  ).
 
 IF pa_bkp = abap_true.
 
-  lobj_hcpr_cp->create_backup( iv_hcprnm = pa_hcpn ).
+  lobj_hcpr_cp->create_backup( iv_hcprnm = pa_hcpn
+                               iv_vers = pa_vers ).
 
 ELSEIF pa_res = abap_true.
 
