@@ -29,6 +29,7 @@ ELSEIF pa_res = abap_true.
 
 ELSEIF pa_sho = abap_true.
 
-  lobj_hcpr_cp->show_mapping( iv_hcprnm = pa_hcpn ).
+  lobj_hcpr_cp->show_mapping( iv_hcprnm = pa_hcpn
+                              iv_vers   = pa_vers ).
 
 ENDIF.

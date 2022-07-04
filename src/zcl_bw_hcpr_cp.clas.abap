@@ -26,7 +26,8 @@ CLASS zcl_bw_hcpr_cp DEFINITION
                 iv_vers   TYPE char10.
 
     METHODS show_mapping
-      IMPORTING iv_hcprnm TYPE char30.
+      IMPORTING iv_hcprnm TYPE char30
+                iv_vers   TYPE char10.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -133,7 +134,7 @@ CLASS zcl_bw_hcpr_cp IMPLEMENTATION.
 
   METHOD create_backup.
 
-    SELECT single hcprnm, xml_ui
+    SELECT SINGLE hcprnm, xml_ui
     FROM rsohcpr
     INTO @DATA(ls_rsohcpr)
     WHERE hcprnm = @iv_hcprnm
@@ -181,179 +182,69 @@ CLASS zcl_bw_hcpr_cp IMPLEMENTATION.
              target       TYPE rsohcprcolnm,
            END OF ty_output.
 
-    TYPES: BEGIN OF ty_output2,
-             iobj TYPE rsdiobjnm,
-           END OF ty_output2.
+    DATA: lv_offset   TYPE i,
+          ls_output   TYPE ty_output,
+          lt_output   TYPE STANDARD TABLE OF ty_output,
+          lt_xml_info TYPE TABLE OF smum_xmltb,
+          lt_return   TYPE STANDARD TABLE OF bapiret2.
 
-    TYPES: BEGIN OF ty_output3,
-             object TYPE rsdodsobject,
-             source TYPE rsdiobjnm,
-             target TYPE rsohcprcolnm,
-           END OF ty_output3.
-
-    DATA: l_hobj_xml_def      TYPE xstring,
-          lt_xml_info         TYPE TABLE OF smum_xmltb INITIAL SIZE 0,
-          lt_return           TYPE STANDARD TABLE OF bapiret2,
-          lt_output           TYPE STANDARD TABLE OF ty_output,
-          lt_output2          TYPE STANDARD TABLE OF ty_output2,
-          lt_output3          TYPE STANDARD TABLE OF ty_output3,
-          l_cvalue            TYPE char255,
-          l_offset            TYPE i,
-          l_output            TYPE ty_output,
-          l_output2           TYPE ty_output2,
-          l_output3           TYPE ty_output3,
-          lv_flg_hcpr         TYPE flag VALUE 'X',
-          lv_flg_adso         TYPE flag VALUE '',
-          lv_flg_haap         TYPE flag VALUE '',
-          lv_idx_collect_haap TYPE sy-tabix.
-
-    DATA: go_alv     TYPE REF TO cl_salv_table,
-          go_columns TYPE REF TO cl_salv_columns,
-          go_funcs   TYPE REF TO cl_salv_functions,
-          go_ex      TYPE REF TO cx_root.
-
-    FIELD-SYMBOLS: <fs_xml_info> TYPE smum_xmltb,
-                   <fs_any_tab>  TYPE any.
-
-* Select XML definition of CompositeProvider
     SELECT SINGLE xml_ui
-       FROM rsohcpr
-       INTO l_hobj_xml_def
-       WHERE hcprnm = iv_hcprnm
-       AND objvers = 'A'.
+    FROM zbw_hcpr_cp
+    INTO @DATA(lv_hcpr_xml_def)
+    WHERE hcprnm = @iv_hcprnm
+    AND vers = @iv_vers.
 
     IF sy-subrc <> 0.
-      CLEAR lv_flg_hcpr.
-* Check if input is an Advanced DSO
-      SELECT SINGLE xml_ui
-      FROM rsoadso
-      INTO l_hobj_xml_def
-      WHERE adsonm = iv_hcprnm
-      AND objvers = 'A'.
-      IF sy-subrc <> 0.
-        CLEAR: lv_flg_hcpr, lv_flg_adso.
-        SELECT SINGLE xml
-        FROM rsdhamap
-        INTO l_hobj_xml_def
-        WHERE haapnm = iv_hcprnm
-        AND objvers = 'A'.
-
-        IF sy-subrc <> 0.
-          MESSAGE 'Invalid or Inactive CompositeProvider/ADSO /HAAP or CompositeProvider/ADSO/HAAP not of type HCPR/ADSO/HAAP' TYPE 'I'.
-          EXIT.
-        ELSE.
-          lv_flg_haap = 'X'.
-        ENDIF.
-      ELSE. "lv_flg_adso
-        lv_flg_adso = 'X'.
-      ENDIF.
+      MESSAGE 'No valid,inactive or supported CompositeProvider' TYPE 'I'.
+      EXIT.
     ENDIF.
 
-    IF lv_flg_hcpr EQ 'X'.
-      BREAK bb5827.
-      ASSIGN lt_output TO <fs_any_tab> .
-* Parse XML string to XML table
+    CALL FUNCTION 'SMUM_XML_PARSE'
+      EXPORTING
+        xml_input = lv_hcpr_xml_def
+      TABLES
+        xml_table = lt_xml_info
+        return    = lt_return.
 
-      CALL FUNCTION 'SMUM_XML_PARSE'
-        EXPORTING
-          xml_input = l_hobj_xml_def
-        TABLES
-          xml_table = lt_xml_info
-          return    = lt_return.
-* Internal table with mapping
-
-      LOOP AT lt_xml_info ASSIGNING <fs_xml_info>.
-
-        IF <fs_xml_info>-cname = 'entity'.
-
-          l_cvalue = <fs_xml_info>-cvalue.
-          SEARCH l_cvalue FOR 'composite'.
-          l_offset = sy-fdpos.
-          l_offset = l_offset - 1.
-          TRY.
-              l_output-infoprovider = <fs_xml_info>-cvalue(l_offset). "CompositeProvider
-            CATCH cx_sy_range_out_of_bounds.
-              l_output-infoprovider = <fs_xml_info>-cvalue.
-          ENDTRY.
-
-        ELSEIF
-         <fs_xml_info>-cname = 'targetName'.
-          l_output-target = <fs_xml_info>-cvalue.
-        ELSEIF
-          <fs_xml_info>-cname = 'sourceName'.
-          l_output-source = <fs_xml_info>-cvalue.
-          APPEND l_output TO lt_output.
-        ENDIF.
-      ENDLOOP.
-
-    ELSEIF lv_flg_adso = 'X'.
-
-      ASSIGN lt_output2 TO <fs_any_tab> .
-* Parse XML string to XML table
-      CALL FUNCTION 'SMUM_XML_PARSE'
-        EXPORTING
-          xml_input = l_hobj_xml_def
-        TABLES
-          xml_table = lt_xml_info
-          return    = lt_return.
-* Internal table with mapping
-
-      LOOP AT lt_xml_info ASSIGNING <fs_xml_info>.
-        IF <fs_xml_info>-cname = 'infoObjectName'.
-          l_output2-iobj = <fs_xml_info>-cvalue.
-          APPEND l_output2 TO lt_output2.
-        ENDIF.
-      ENDLOOP.
-    ELSEIF lv_flg_haap = 'X'.
-
-      ASSIGN lt_output3 TO <fs_any_tab> .
-* Parse XML string to XML table
-      CALL FUNCTION 'SMUM_XML_PARSE'
-        EXPORTING
-          xml_input = l_hobj_xml_def
-        TABLES
-          xml_table = lt_xml_info
-          return    = lt_return.
-* Pick-Up index for
-      CLEAR:lv_idx_collect_haap.
-      READ TABLE lt_xml_info ASSIGNING <fs_xml_info> WITH KEY cvalue = '0BW_TGT_INFOSOURCE'.
-
-      IF sy-subrc = 0.
-        lv_idx_collect_haap = sy-tabix.
+    LOOP AT lt_xml_info REFERENCE INTO DATA(lr_xml_info).
+      IF lr_xml_info->cname = 'entity'.
+        DATA(lv_cvalue) = lr_xml_info->cvalue.
+        SEARCH lv_cvalue FOR 'composite'.
+        lv_offset = sy-fdpos.
+        lv_offset = lv_offset - 1.
+        TRY.
+            ls_output-infoprovider = lr_xml_info->cvalue(lv_offset). "CompositeProvider
+          CATCH cx_sy_range_out_of_bounds.
+            ls_output-infoprovider = lr_xml_info->cvalue.
+        ENDTRY.
+      ELSEIF
+       lr_xml_info->cname = 'targetName'.
+        ls_output-target = lr_xml_info->cvalue.
+      ELSEIF
+        lr_xml_info->cname = 'sourceName'.
+        ls_output-source = lr_xml_info->cvalue.
+        APPEND ls_output TO lt_output.
       ENDIF.
-* Internal table with mapping
-      l_output3-object = '0BW_TGT_INFOSOURCE'.
-      LOOP AT lt_xml_info ASSIGNING <fs_xml_info>.
-        IF sy-tabix > lv_idx_collect_haap.
-          IF <fs_xml_info>-cname = 'sourceFieldName'.
-            l_output3-source = <fs_xml_info>-cvalue.
-          ELSEIF <fs_xml_info>-cname = 'targetFieldName'.
-            l_output3-target = <fs_xml_info>-cvalue.
-            APPEND l_output3 TO lt_output3.
-          ENDIF.
+    ENDLOOP.
 
-        ENDIF.
-      ENDLOOP.
-      DELETE ADJACENT DUPLICATES FROM lt_output3.
-    ENDIF.
-
-* Output to ALV
     TRY.
         cl_salv_table=>factory(
         IMPORTING
-        r_salv_table = go_alv
+        r_salv_table = DATA(lobj_alv)
         CHANGING
-        t_table = <fs_any_tab> ).
-        " set column optimized
-        go_columns = go_alv->get_columns( ).
-        go_columns->set_optimize( ).
-        " set functions
-        go_funcs = go_alv->get_functions( ).
-        go_funcs->set_all( ).
-        go_alv->display( ).
-      CATCH cx_salv_msg INTO go_ex.
-        MESSAGE go_ex TYPE 'E'.
+        t_table = lt_output ).
+
+        DATA(lobj_columns) = lobj_alv->get_columns( ).
+        lobj_columns->set_optimize( ).
+
+        DATA(lobj_funcs) = lobj_alv->get_functions( ).
+        lobj_funcs->set_all( ).
+
+        lobj_alv->display( ).
+      CATCH cx_salv_msg INTO DATA(lobj_excep).
+        MESSAGE lobj_excep TYPE 'E'.
     ENDTRY.
+
 
   ENDMETHOD.
 

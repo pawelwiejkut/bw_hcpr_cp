@@ -16,6 +16,36 @@
      <ENTRY>Create a copy of HCPR content and restore if needed</ENTRY>
      <LENGTH>51</LENGTH>
     </item>
+    <item>
+     <ID>S</ID>
+     <KEY>PA_BKP</KEY>
+     <ENTRY>Create backup</ENTRY>
+     <LENGTH>21</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>PA_HCPN</KEY>
+     <ENTRY>Composite provider name</ENTRY>
+     <LENGTH>31</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>PA_RES</KEY>
+     <ENTRY>Restore from backup</ENTRY>
+     <LENGTH>27</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>PA_SHO</KEY>
+     <ENTRY>Show assignments</ENTRY>
+     <LENGTH>24</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>PA_VERS</KEY>
+     <ENTRY>Version</ENTRY>
+     <LENGTH>15</LENGTH>
+    </item>
    </TPOOL>
   </asx:values>
  </asx:abap>
