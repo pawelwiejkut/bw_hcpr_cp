@@ -5,7 +5,7 @@ npm run merge || exit 1
 wc -l ./zbw_hcpr_cp.abap
 
 # Deploy artifacts
-git clone https://github.com/pawelwiejkut/bw_trfn_tester.git
+git clone https://github.com/pawelwiejkut/bw_hcpr_cp.git
 cp zbw_hcpr_cp.abap bw_hcpr_cp/last_build/zbw_hcpr_cp.abap
 cd bw_hcpr_cp
 
