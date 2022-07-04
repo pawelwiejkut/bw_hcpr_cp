@@ -1,0 +1,5 @@
+PA_BKP	Create backup
+PA_HCPN	Composite provider name
+PA_RES	Restore from backup
+PA_SHO	Show assignments
+PA_VERS	Version
