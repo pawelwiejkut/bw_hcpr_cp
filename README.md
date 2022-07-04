@@ -1,2 +1,2 @@
-# bw_hcpr_cp
+# Copy Content of Composite Provider and restore if needed
 Create a backup of composite provider context and restore anytime
