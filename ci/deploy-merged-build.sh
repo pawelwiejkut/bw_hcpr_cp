@@ -15,4 +15,4 @@ git config user.email "ci@pawelwiejkut.net"
 git config user.name "CI"
 git add last_build/zbw_hcpr_cp.abap
 git commit -m "CI build [skip ci]" || exit 1
-git push -q https://$GITHUB_API_KEY@github.com/pawelwiejkut/bw_trfn_tester.git 
+git push -q https://$GITHUB_API_KEY@github.com/pawelwiejkut/zbw_hcpr_cp.git 
