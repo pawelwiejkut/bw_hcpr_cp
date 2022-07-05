@@ -22,7 +22,6 @@ IF pa_bkp = abap_true.
 ELSEIF pa_res = abap_true.
 
   lobj_hcpr_cp->restore_backup(
-    EXPORTING
       iv_hcprnm = pa_hcpn
       iv_vers   = pa_vers
   ).
