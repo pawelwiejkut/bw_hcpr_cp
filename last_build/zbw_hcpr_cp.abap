@@ -3,7 +3,7 @@
 *&---------------------------------------------------------------------*
 *&
 *&---------------------------------------------------------------------*
-REPORT zbw_hcpr_cp_standalone.
+REPORT zbw_hcpr_cp.
 
 CLASS zcl_bw_hcpr_cp DEFINITION DEFERRED.
 CLASS zcl_bw_hcpr_cp DEFINITION
@@ -304,6 +304,6 @@ ENDIF.
 
 ****************************************************
 INTERFACE lif_abapmerge_marker.
-* abapmerge 0.14.7 - 2022-07-05T14:19:13.710Z
+* abapmerge 0.14.7 - 2022-07-05T14:25:03.347Z
 ENDINTERFACE.
 ****************************************************
