@@ -8,7 +8,7 @@ REPORT zbw_hcpr_cp_standalone.
 CLASS zcl_bw_hcpr_cp DEFINITION DEFERRED.
 CLASS zcl_bw_hcpr_cp DEFINITION
   FINAL
-  CREATE PUBLIC .
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
 
@@ -18,20 +18,36 @@ CLASS zcl_bw_hcpr_cp DEFINITION
              xml_ui TYPE rsrawstring.
     TYPES: END OF ty_hcpr.
 
-    TYPES: t_ty_hcpr TYPE STANDARD TABLE OF ty_hcpr WITH DEFAULT KEY.
+    TYPES: t_ty_hcpr TYPE STANDARD TABLE OF ty_hcpr.
 
+    "! <p class="shorttext synchronized" lang="en"></p>
+    "! Check DDIC
     METHODS constructor.
 
+    "! <p class="shorttext synchronized" lang="en"></p>
+    "! Create global table
     METHODS create_global_ddic.
 
+    "! <p class="shorttext synchronized" lang="en"></p>
+    "! Create backup
+    "! @parameter iv_hcprnm | <p class="shorttext synchronized" lang="en">Composite Provider Name</p>
+    "! @parameter iv_vers | <p class="shorttext synchronized" lang="en">Backup version</p>
     METHODS create_backup
       IMPORTING iv_hcprnm TYPE char30
-                iv_vers   TYPE char10..
+                iv_vers   TYPE char10.
 
+    "! <p class="shorttext synchronized" lang="en"></p>
+    "! Restore Backup
+    "! @parameter iv_hcprnm | <p class="shorttext synchronized" lang="en">Composite Provider Name</p>
+    "! @parameter iv_vers | <p class="shorttext synchronized" lang="en">Backup version</p>
     METHODS restore_backup
       IMPORTING iv_hcprnm TYPE char30
                 iv_vers   TYPE char10.
 
+    "! <p class="shorttext synchronized" lang="en"></p>
+    "! Show context composite provider mapping
+    "! @parameter iv_hcprnm | <p class="shorttext synchronized" lang="en">Composite Provider Name</p>
+    "! @parameter iv_vers | <p class="shorttext synchronized" lang="en"><Backup version/p>
     METHODS show_mapping
       IMPORTING iv_hcprnm TYPE char30
                 iv_vers   TYPE char10.
@@ -147,7 +163,7 @@ CLASS zcl_bw_hcpr_cp IMPLEMENTATION.
     DATA(ls_hcprtab) = CORRESPONDING ty_hcpr( ls_rsohcpr ).
     ls_hcprtab-vers = iv_vers.
 
-    INSERT ('ZBW_HCPR_CP') FROM ls_hcprtab.
+    INSERT ('ZBW_HCPR_CP') FROM @ls_hcprtab.
     IF sy-subrc <> 0.
       MESSAGE 'Error during backup creation, check version' TYPE 'E'.
     ENDIF.
@@ -169,8 +185,8 @@ CLASS zcl_bw_hcpr_cp IMPLEMENTATION.
     ENDIF.
 
     UPDATE rsohcpr
-    SET xml_ui = ls_hcprtab-xml_ui
-    WHERE hcprnm = ls_hcprtab-hcprnm.
+    SET xml_ui = @ls_hcprtab-xml_ui
+    WHERE hcprnm = @ls_hcprtab-hcprnm.
 
     IF sy-subrc <> 0.
       MESSAGE 'Error during backup restore, check version' TYPE 'E'.
@@ -275,7 +291,6 @@ IF pa_bkp = abap_true.
 ELSEIF pa_res = abap_true.
 
   lobj_hcpr_cp->restore_backup(
-    EXPORTING
       iv_hcprnm = pa_hcpn
       iv_vers   = pa_vers
   ).
@@ -289,6 +304,6 @@ ENDIF.
 
 ****************************************************
 INTERFACE lif_abapmerge_marker.
-* abapmerge 0.14.7 - 2022-07-05T14:16:20.326Z
+* abapmerge 0.14.7 - 2022-07-05T14:19:13.710Z
 ENDINTERFACE.
 ****************************************************
