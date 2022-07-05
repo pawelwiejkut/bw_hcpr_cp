@@ -202,15 +202,16 @@ CLASS zcl_bw_hcpr_cp IMPLEMENTATION.
              target       TYPE rsohcprcolnm,
            END OF ty_output.
 
-    DATA: lv_offset   TYPE i,
-          ls_output   TYPE ty_output,
-          lt_output   TYPE STANDARD TABLE OF ty_output,
-          lt_xml_info TYPE TABLE OF smum_xmltb,
-          lt_return   TYPE STANDARD TABLE OF bapiret2.
+    DATA: lv_offset       TYPE i,
+          ls_output       TYPE ty_output,
+          lt_output       TYPE STANDARD TABLE OF ty_output,
+          lt_xml_info     TYPE TABLE OF smum_xmltb,
+          lv_hcpr_xml_def TYPE rsrawstring,
+          lt_return       TYPE STANDARD TABLE OF bapiret2.
 
     SELECT SINGLE xml_ui
-    FROM zbw_hcpr_cp
-    INTO @DATA(lv_hcpr_xml_def)
+    FROM ('ZBW_HCPR_CP')
+    INTO @lv_hcpr_xml_def
     WHERE hcprnm = @iv_hcprnm
     AND vers = @iv_vers.
 
@@ -274,7 +275,7 @@ CLASS zcl_bw_hcpr_cp IMPLEMENTATION.
 
 ENDCLASS.
 
-DATA: lobj_hcpr_cp type ref to zcl_bw_hcpr_cp.
+DATA: lobj_hcpr_cp TYPE REF TO zcl_bw_hcpr_cp.
 
 PARAMETERS: pa_hcpn TYPE rsohcprnm,
             pa_vers TYPE char10.
@@ -283,29 +284,31 @@ PARAMETERS: pa_bkp RADIOBUTTON GROUP rg1,
             pa_res RADIOBUTTON GROUP rg1,
             pa_sho RADIOBUTTON GROUP rg1.
 
-lobj_hcpr_cp = NEW #(  ).
+end-of-selection.
 
-IF pa_bkp = abap_true.
+  lobj_hcpr_cp = NEW #(  ).
 
-  lobj_hcpr_cp->create_backup( iv_hcprnm = pa_hcpn
-                               iv_vers = pa_vers ).
+  IF pa_bkp = abap_true.
 
-ELSEIF pa_res = abap_true.
+    lobj_hcpr_cp->create_backup( iv_hcprnm = pa_hcpn
+                                 iv_vers = pa_vers ).
 
-  lobj_hcpr_cp->restore_backup(
-      iv_hcprnm = pa_hcpn
-      iv_vers   = pa_vers
-  ).
+  ELSEIF pa_res = abap_true.
 
-ELSEIF pa_sho = abap_true.
+    lobj_hcpr_cp->restore_backup(
+        iv_hcprnm = pa_hcpn
+        iv_vers   = pa_vers
+    ).
 
-  lobj_hcpr_cp->show_mapping( iv_hcprnm = pa_hcpn
-                              iv_vers   = pa_vers ).
+  ELSEIF pa_sho = abap_true.
 
-ENDIF.
+    lobj_hcpr_cp->show_mapping( iv_hcprnm = pa_hcpn
+                                iv_vers   = pa_vers ).
+
+  ENDIF.
 
 ****************************************************
 INTERFACE lif_abapmerge_marker.
-* abapmerge 0.14.7 - 2022-07-05T14:31:02.776Z
+* abapmerge 0.14.7 - 2022-07-05T14:44:21.593Z
 ENDINTERFACE.
 ****************************************************
