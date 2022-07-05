@@ -45,6 +45,13 @@ CLASS zcl_bw_hcpr_cp DEFINITION
       IMPORTING iv_hcprnm TYPE char30
                 iv_vers   TYPE char10.
 
+    "! <p class="shorttext synchronized" lang="en"></p>
+    "! Activate Composite Provider
+    "! @parameter iv_hcprnm | <p class="shorttext synchronized" lang="en">Activate HCPR</p>
+    "! @parameter iv_vers | <p class="shorttext synchronized" lang="en"><Backup version/p>
+    METHODS activate_hcpr
+      IMPORTING iv_hcprnm TYPE char30.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
@@ -268,6 +275,14 @@ CLASS zcl_bw_hcpr_cp IMPLEMENTATION.
   METHOD constructor.
 
     create_global_ddic( ).
+
+  ENDMETHOD.
+
+  METHOD activate_hcpr.
+
+    SUBMIT rsdg_hcpr_activate
+    WITH r_spcmp = abap_true
+    WITH so_hcpr = iv_hcprnm.
 
   ENDMETHOD.
 

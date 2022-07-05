@@ -18,6 +18,12 @@
     </item>
     <item>
      <ID>S</ID>
+     <KEY>PA_ACT</KEY>
+     <ENTRY>Activate ater restore?</ENTRY>
+     <LENGTH>30</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
      <KEY>PA_BKP</KEY>
      <ENTRY>Create backup</ENTRY>
      <LENGTH>21</LENGTH>
