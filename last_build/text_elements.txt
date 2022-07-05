@@ -1,5 +1,15 @@
+PA_ACT	Activate ater restore?
 PA_BKP	Create backup
 PA_HCPN	Composite provider name
 PA_RES	Restore from backup
 PA_SHO	Show assignments
 PA_VERS	Version
+
+Copy-paste version:
+
+Activate ater restore?
+Create backup
+Composite provider name
+Restore from backup
+Show assignments
+Version
