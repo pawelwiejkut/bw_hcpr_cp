@@ -52,6 +52,13 @@ CLASS zcl_bw_hcpr_cp DEFINITION
       IMPORTING iv_hcprnm TYPE char30
                 iv_vers   TYPE char10.
 
+    "! <p class="shorttext synchronized" lang="en"></p>
+    "! Activate Composite Provider
+    "! @parameter iv_hcprnm | <p class="shorttext synchronized" lang="en">Activate HCPR</p>
+    "! @parameter iv_vers | <p class="shorttext synchronized" lang="en"><Backup version/p>
+    METHODS activate_hcpr
+      IMPORTING iv_hcprnm TYPE char30.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
@@ -273,6 +280,14 @@ CLASS zcl_bw_hcpr_cp IMPLEMENTATION.
 
   ENDMETHOD.
 
+  METHOD activate_hcpr.
+
+    SUBMIT rsdg_hcpr_activate
+    WITH r_spcmp = abap_true
+    WITH so_hcpr = iv_hcprnm.
+
+  ENDMETHOD.
+
 ENDCLASS.
 
 DATA: lobj_hcpr_cp TYPE REF TO zcl_bw_hcpr_cp.
@@ -283,6 +298,8 @@ PARAMETERS: pa_hcpn TYPE rsohcprnm,
 PARAMETERS: pa_bkp RADIOBUTTON GROUP rg1,
             pa_res RADIOBUTTON GROUP rg1,
             pa_sho RADIOBUTTON GROUP rg1.
+
+PARAMETERS: pa_act AS CHECKBOX.
 
 end-of-selection.
 
@@ -300,15 +317,18 @@ end-of-selection.
         iv_vers   = pa_vers
     ).
 
+    IF pa_act = abap_true.
+      lobj_hcpr_cp->activate_hcpr( iv_hcprnm = pa_hcpn ).
+    ENDIF.
+
   ELSEIF pa_sho = abap_true.
 
     lobj_hcpr_cp->show_mapping( iv_hcprnm = pa_hcpn
                                 iv_vers   = pa_vers ).
-
   ENDIF.
 
 ****************************************************
 INTERFACE lif_abapmerge_marker.
-* abapmerge 0.14.7 - 2022-07-05T15:15:33.917Z
+* abapmerge 0.14.7 - 2022-07-05T15:17:36.534Z
 ENDINTERFACE.
 ****************************************************
