@@ -2,7 +2,7 @@
   "license": "MIT",
   "scripts": {
     "test": "npm run abaplint",
-    "merge": "abapmerge -f src/zbw_hcpr_cp.prog.abap -c zbw_hcpr_cp_standalone > zbw_hcpr_cp_standalone.abap",
+    "merge": "abapmerge -f src/zbw_hcpr_cp.prog.abap -c zbw_hcpr_cp > zbw_hcpr_cp.abap",
     "merge.ci": "cp zbw_hcpr_cp.abap ci/zbw_hcpr_cp.prog.abap",
     "unit": "rm -rf output && abap_transpile && echo RUNNING && node output/index.js",
     "abaplint": "abaplint",
