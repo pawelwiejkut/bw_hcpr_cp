@@ -5,6 +5,8 @@
 *&---------------------------------------------------------------------*
 REPORT zbw_hcpr_cp.
 
+DATA: lobj_hcpr_cp type ref to zcl_bw_hcpr_cp.
+
 PARAMETERS: pa_hcpn TYPE rsohcprnm,
             pa_vers TYPE char10.
 
@@ -12,7 +14,7 @@ PARAMETERS: pa_bkp RADIOBUTTON GROUP rg1,
             pa_res RADIOBUTTON GROUP rg1,
             pa_sho RADIOBUTTON GROUP rg1.
 
-DATA(lobj_hcpr_cp) = NEW zcl_bw_hcpr_cp(  ).
+lobj_hcpr_cp = NEW #(  ).
 
 IF pa_bkp = abap_true.
 
