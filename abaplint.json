@@ -109,7 +109,7 @@
         "indentation": false,
         
         "sequential_blank": {
-            "lines": 3
+            "lines": 4
         },
         "empty_line_in_statement": {
             "allowChained": true
