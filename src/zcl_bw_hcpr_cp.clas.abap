@@ -198,15 +198,16 @@ CLASS zcl_bw_hcpr_cp IMPLEMENTATION.
              target       TYPE rsohcprcolnm,
            END OF ty_output.
 
-    DATA: lv_offset   TYPE i,
-          ls_output   TYPE ty_output,
-          lt_output   TYPE STANDARD TABLE OF ty_output,
-          lt_xml_info TYPE TABLE OF smum_xmltb,
-          lt_return   TYPE STANDARD TABLE OF bapiret2.
+    DATA: lv_offset       TYPE i,
+          ls_output       TYPE ty_output,
+          lt_output       TYPE STANDARD TABLE OF ty_output,
+          lt_xml_info     TYPE TABLE OF smum_xmltb,
+          lv_hcpr_xml_def TYPE rsrawstring,
+          lt_return       TYPE STANDARD TABLE OF bapiret2.
 
     SELECT SINGLE xml_ui
-    FROM zbw_hcpr_cp
-    INTO @DATA(lv_hcpr_xml_def)
+    FROM ('ZBW_HCPR_CP')
+    INTO @lv_hcpr_xml_def
     WHERE hcprnm = @iv_hcprnm
     AND vers = @iv_vers.
 
