@@ -297,7 +297,7 @@ ENDCLASS.
 DATA: lobj_hcpr_cp TYPE REF TO zcl_bw_hcpr_cp,
       lv_timt      TYPE tzonref-tstampl,
       lv_tz        TYPE ttzz-tzone,
-      lv_answer    TYPE i.
+      lv_answer    TYPE c length 1.
 
 PARAMETERS: pa_hcpn TYPE rsohcprnm,
             pa_vers TYPE char10.
@@ -381,6 +381,6 @@ end-of-selection.
 
 ****************************************************
 INTERFACE lif_abapmerge_marker.
-* abapmerge 0.14.7 - 2022-07-16T13:45:02.605Z
+* abapmerge 0.14.7 - 2022-07-16T13:53:19.349Z
 ENDINTERFACE.
 ****************************************************
