@@ -8,7 +8,7 @@ REPORT zbw_hcpr_cp.
 DATA: lobj_hcpr_cp TYPE REF TO zcl_bw_hcpr_cp,
       lv_timt      TYPE tzonref-tstampl,
       lv_tz        TYPE ttzz-tzone,
-      lv_answer    TYPE i.
+      lv_answer    TYPE c length 1.
 
 PARAMETERS: pa_hcpn TYPE rsohcprnm,
             pa_vers TYPE char10.
