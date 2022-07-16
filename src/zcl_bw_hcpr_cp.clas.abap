@@ -8,6 +8,7 @@ CLASS zcl_bw_hcpr_cp DEFINITION
     TYPES: BEGIN OF ty_hcpr,
              hcprnm TYPE c LENGTH 30,
              vers   TYPE c LENGTH 10,
+             timt   TYPE tzonref-tstampl,
              xml_ui TYPE rsrawstring.
     TYPES: END OF ty_hcpr.
 
@@ -84,7 +85,9 @@ CLASS zcl_bw_hcpr_cp IMPLEMENTATION.
     keyflag = abap_true datatype = 'CHAR' leng = '000030' )
     ( tablename = 'ZBW_HCPR_CP' fieldname = 'VERS' position ='0002'
     keyflag = abap_true datatype = 'CHAR' leng = '000010' )
-    ( tablename = 'ZBW_HCPR_CP' fieldname = 'XML_UI' position ='0003'
+    ( tablename = 'ZBW_HCPR_CP' fieldname = 'TIMT' position ='0003'
+     datatype = 'DEC' leng = '000021' decimals = '000007' )
+    ( tablename = 'ZBW_HCPR_CP' fieldname = 'XML_UI' position ='0004'
      datatype = 'RSTR'  )
  ).
 
@@ -165,6 +168,7 @@ CLASS zcl_bw_hcpr_cp IMPLEMENTATION.
 
     DATA(ls_hcprtab) = CORRESPONDING ty_hcpr( ls_rsohcpr ).
     ls_hcprtab-vers = iv_vers.
+    GET TIME STAMP FIELD ls_hcprtab-timt .
 
     INSERT ('ZBW_HCPR_CP') FROM @ls_hcprtab.
     IF sy-subrc <> 0.
